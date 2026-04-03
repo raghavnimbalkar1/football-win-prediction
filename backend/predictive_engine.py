@@ -20,20 +20,21 @@ def get_team_metrics(team_name):
     df = pd.read_sql(query, engine)
     
     if df.empty:
-        raise ValueError(f"❌ ERROR: Team '{team_name}' not found in the database. Check your spelling.")
+        raise ValueError(f"ERROR: Team '{team_name}' not found in the database. Check your spelling.")
     
     # Return the first row as a dictionary
     return df.iloc[0].to_dict()
 
 def predict_match(home_team, away_team):
-    print(f"Fetching live metrics for {home_team} (Home) vs {away_team} (Away)...")
-    
+    """
+    Predicts match outcome using Elo ratings and Poisson distribution.
+    Returns a dictionary with probabilities and xG values.
+    """
     try:
         home_metrics = get_team_metrics(home_team)
         away_metrics = get_team_metrics(away_team)
     except ValueError as e:
-        print(e)
-        return
+        return {"error": str(e)}
 
     home_elo = home_metrics['current_elo']
     away_elo = away_metrics['current_elo']
@@ -54,8 +55,6 @@ def predict_match(home_team, away_team):
     # Dividing by 800 scales the Elo difference smoothly so xG doesn't explode
     home_xg = base_home_xg * math.pow(10, home_elo_diff / 800)
     away_xg = base_away_xg * math.pow(10, away_elo_diff / 800)
-
-    print(f"Calculated xG -> {home_team}: {home_xg:.2f} | {away_team}: {away_xg:.2f}")
 
     # 3. Build the Bivariate Poisson Matrix
     home_win_prob = 0.0
@@ -82,16 +81,30 @@ def predict_match(home_team, away_team):
     draw_prob /= total_prob
     away_win_prob /= total_prob
 
-    # 4. Output the Results and Implied Odds
-    print("\n" + "="*40)
-    print(f"MATCH PREDICTION: {home_team} vs {away_team}")
-    print("="*40)
-    print(f"1 (Home Win) : {home_win_prob * 100:.1f}%  |  Fair Odds: {1/home_win_prob:.2f}")
-    print(f"X (Draw)     : {draw_prob * 100:.1f}%  |  Fair Odds: {1/draw_prob:.2f}")
-    print(f"2 (Away Win) : {away_win_prob * 100:.1f}%  |  Fair Odds: {1/away_win_prob:.2f}")
-    print("="*40 + "\n")
+    # 4. Return prediction as dictionary
+    return {
+        "home_team": home_team,
+        "away_team": away_team,
+        "home_win_prob": round(home_win_prob, 4),
+        "draw_prob": round(draw_prob, 4),
+        "away_win_prob": round(away_win_prob, 4),
+        "home_win_odds": round(1 / home_win_prob, 2),
+        "draw_odds": round(1 / draw_prob, 2),
+        "away_win_odds": round(1 / away_win_prob, 2),
+        "home_xg": round(home_xg, 2),
+        "away_xg": round(away_xg, 2),
+        "home_elo": round(home_elo, 1),
+        "away_elo": round(away_elo, 1),
+    }
 
 if __name__ == "__main__":
-    # Test the engine with a heavyweight clash!
-    # Make sure the names perfectly match your database (e.g., 'Bayern Munich', 'Dortmund', 'Leverkusen')
-    predict_match("Bayern Munich", "Union Berlin")
+    result = predict_match("Dortmund", "Bayern Munich")
+    print("\n" + "="*50)
+    print(f"MATCH PREDICTION: {result['home_team']} vs {result['away_team']}")
+    print("="*50)
+    print(f"1 (Home Win) : {result['home_win_prob']*100:.1f}%  |  Fair Odds: {result['home_win_odds']:.2f}")
+    print(f"X (Draw)     : {result['draw_prob']*100:.1f}%  |  Fair Odds: {result['draw_odds']:.2f}")
+    print(f"2 (Away Win) : {result['away_win_prob']*100:.1f}%  |  Fair Odds: {result['away_win_odds']:.2f}")
+    print(f"\nExpected Goals: {result['home_team']} {result['home_xg']:.2f} - {result['away_xg']:.2f} {result['away_team']}")
+    print(f"Elo Ratings: {result['home_team']} {result['home_elo']:.0f} - {result['away_elo']:.0f} {result['away_team']}")
+    print("="*50)
