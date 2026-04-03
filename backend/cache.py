@@ -1,6 +1,6 @@
 """
 Redis Cache Module for Live Match State Storage
-Handles all caching operations using Redis
+Handles all caching operations using Redis with fallback to in-memory cache
 """
 import redis
 import json
@@ -16,17 +16,21 @@ logger = logging.getLogger(__name__)
 class RedisCache:
     """
     Redis connection and cache management for match state
+    Falls back to in-memory cache if Redis is unavailable
     """
     
     def __init__(self, host: str = "localhost", port: int = 6379, db: int = 0):
         """
-        Initialize Redis connection
+        Initialize Redis connection with fallback to mock cache
         
         Args:
             host: Redis server host
             port: Redis server port
             db: Redis database number
         """
+        self.using_redis = False
+        self.client = None
+        
         try:
             self.client = redis.Redis(
                 host=host,
@@ -38,10 +42,16 @@ class RedisCache:
             )
             # Test connection
             self.client.ping()
+            self.using_redis = True
             logger.info(f"✓ Connected to Redis at {host}:{port}")
-        except redis.ConnectionError as e:
-            logger.error(f"✗ Failed to connect to Redis: {e}")
-            raise
+        except (redis.ConnectionError, Exception) as e:
+            logger.warning(f"⚠️  Redis connection failed: {e}")
+            logger.info("ℹ️  Falling back to in-memory cache")
+            
+            # Use mock cache as fallback
+            from mock_cache import MockRedisCache
+            self.client = MockRedisCache()
+            self.using_redis = False
     
     # ============ MATCH STATE OPERATIONS ============
     

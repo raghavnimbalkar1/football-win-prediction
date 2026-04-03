@@ -34,7 +34,6 @@ def get_db():
     finally:
         db.close()
 
-# --- Quick Connection Test ---
 if __name__ == "__main__":
     try:
         with engine.connect() as connection:
