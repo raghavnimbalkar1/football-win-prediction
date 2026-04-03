@@ -1,0 +1,251 @@
+/* Event Log CSS */
+
+.event-log {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.event-log.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  color: #999;
+  font-style: italic;
+}
+
+/* Events List */
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.events-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.events-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.events-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+.events-list::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Event Item */
+.event {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-left: 4px solid #ccc;
+  border-radius: 4px;
+  background: #f9f9f9;
+  transition: all 0.2s ease;
+}
+
+.event:hover {
+  background: #f5f5f5;
+  border-left-color: #2196f3;
+}
+
+.event.event-goal {
+  border-left-color: #4caf50;
+  background: #e8f5e9;
+}
+
+.event.event-yellow-card {
+  border-left-color: #fbc02d;
+  background: #fffde7;
+}
+
+.event.event-red-card {
+  border-left-color: #f44336;
+  background: #ffebee;
+}
+
+.event.event-substitution {
+  border-left-color: #2196f3;
+  background: #e3f2fd;
+}
+
+/* Event Icon */
+.event-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 4px;
+}
+
+/* Event Details */
+.event-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+
+.event-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.event-minute {
+  background: #333;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 35px;
+  text-align: center;
+}
+
+.event-type {
+  text-transform: capitalize;
+  font-weight: 600;
+  font-size: 13px;
+  color: #666;
+}
+
+.event-team {
+  font-weight: 600;
+  font-size: 13px;
+  color: #333;
+}
+
+.event-info {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+  flex-wrap: wrap;
+}
+
+.player {
+  font-weight: 600;
+  color: #333;
+}
+
+.description {
+  color: #999;
+  font-style: italic;
+}
+
+/* Events Overflow */
+.events-overflow {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  font-style: italic;
+}
+
+/* Animation */
+.event {
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .event-log {
+    padding: 15px;
+  }
+
+  .events-list {
+    max-height: 300px;
+    gap: 10px;
+  }
+
+  .event {
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .event-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  .event-minute {
+    min-width: 30px;
+    font-size: 11px;
+  }
+
+  .event-type,
+  .event-team {
+    font-size: 12px;
+  }
+
+  .event-info {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .events-list {
+    max-height: 250px;
+  }
+
+  .event {
+    padding: 8px;
+  }
+
+  .event-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .event-header {
+    gap: 6px;
+  }
+
+  .event-minute {
+    min-width: 28px;
+    font-size: 10px;
+  }
+
+  .event-type,
+  .event-team {
+    font-size: 11px;
+  }
+
+  .event-info {
+    font-size: 10px;
+  }
+}
