@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMatchWebSocket, useMatchData } from '../hooks';
 import ProbabilityChart from './ProbabilityChart';
 import MatchScore from './MatchScore';
 import EventLog from './EventLog';
+import MetricsComparison from './MetricsComparison';
 import './MatchContainer.css';
 
 interface MatchContainerProps {
@@ -26,16 +27,40 @@ const MatchContainer: React.FC<MatchContainerProps> = ({
 
   const [events, setEvents] = useState<any[]>([]);
   const [predictions, setPredictions] = useState<any | null>(null);
-  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+  const [prematchBaseline, setPrematchBaseline] = useState<any | null>(null);
+
+  // Fetch prematch baseline on mount
+  useEffect(() => {
+    const fetchPrematchBaseline = async () => {
+      try {
+        const response = await fetch(
+          `${apiBaseUrl}/api/match/${matchId}/prematch-baseline`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setPrematchBaseline(data);
+          console.log('Prematch baseline loaded:', data);
+        }
+      } catch (error) {
+        console.error('Error fetching prematch baseline:', error);
+      }
+    };
+
+    if (matchId) {
+      fetchPrematchBaseline();
+    }
+  }, [matchId, apiBaseUrl]);
 
   const handleWebSocketUpdate = (update: any) => {
     console.log('WebSocket update received:', update);
 
     switch (update.type) {
-      case 'connected':
-        setConnectionStatus('connected');
-        break;
-
       case 'score_update':
         setPredictions(update.predictions);
         break;
@@ -118,6 +143,40 @@ const MatchContainer: React.FC<MatchContainerProps> = ({
         <div className="score-section">
           <MatchScore match={matchData} />
         </div>
+
+        {/* Metrics Comparison - Pre-Match vs Live */}
+        {prematchBaseline && (
+          <div className="metrics-section">
+            <MetricsComparison
+              homeTeam={matchData.home_team}
+              awayTeam={matchData.away_team}
+              prematchMetrics={{
+                xg_home: prematchBaseline.pre_home_xg,
+                xg_away: prematchBaseline.pre_away_xg,
+                prob_home: prematchBaseline.pre_home_win_prob,
+                prob_draw: prematchBaseline.pre_draw_prob,
+                prob_away: prematchBaseline.pre_away_win_prob,
+                elo_home: prematchBaseline.pre_home_elo,
+                elo_away: prematchBaseline.pre_away_elo,
+              }}
+              liveMetrics={{
+                xg_home: matchData.current_home_xg || matchData.base_home_xg,
+                xg_away: matchData.current_away_xg || matchData.base_away_xg,
+                prob_home: predictions?.home_win_prob || matchData.home_win_prob,
+                prob_draw: predictions?.draw_prob || matchData.draw_prob,
+                prob_away: predictions?.away_win_prob || matchData.away_win_prob,
+                elo_home: matchData.home_elo,
+                elo_away: matchData.away_elo,
+                shots_home: matchData.home_shots,
+                shots_away: matchData.away_shots,
+                possession_home: matchData.home_possession,
+                possession_away: matchData.away_possession,
+              }}
+              currentMinute={matchData.current_minute}
+              matchStatus={matchData.status as 'scheduled' | 'in_progress' | 'finished'}
+            />
+          </div>
+        )}
 
         {/* Probability section */}
         <div className="probability-section">

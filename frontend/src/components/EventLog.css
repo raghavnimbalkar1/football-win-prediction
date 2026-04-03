@@ -1,20 +1,22 @@
-/* Event Log CSS */
+/* Event Log CSS - Modern Design */
 
 .event-log {
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #ffffff, #f8f9fd);
+  border: 2px solid rgba(102, 126, 234, 0.15);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.15), 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .event-log.empty {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 150px;
-  color: #999;
+  min-height: 200px;
+  color: #aaa;
   font-style: italic;
+  font-size: 14px;
+  letter-spacing: 0.2px;
 }
 
 /* Events List */
@@ -22,9 +24,9 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: 400px;
+  max-height: 450px;
   overflow-y: auto;
-  padding-right: 10px;
+  padding-right: 8px;
 }
 
 .events-list::-webkit-scrollbar {
@@ -32,66 +34,74 @@
 }
 
 .events-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(102, 126, 234, 0.05);
   border-radius: 10px;
 }
 
 .events-list::-webkit-scrollbar-thumb {
-  background: #ccc;
+  background: rgba(102, 126, 234, 0.3);
   border-radius: 10px;
+  transition: all 0.3s ease;
 }
 
 .events-list::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  background: rgba(102, 126, 234, 0.5);
 }
 
 /* Event Item */
 .event {
   display: flex;
-  gap: 12px;
-  padding: 12px;
-  border-left: 4px solid #ccc;
-  border-radius: 4px;
-  background: #f9f9f9;
-  transition: all 0.2s ease;
+  gap: 14px;
+  padding: 16px;
+  border-left: 5px solid rgba(102, 126, 234, 0.3);
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.03));
+  transition: all 0.3s ease;
+  border: 1px solid rgba(102, 126, 234, 0.1);
 }
 
 .event:hover {
-  background: #f5f5f5;
-  border-left-color: #2196f3;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.08));
+  transform: translateX(4px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.15);
 }
 
 .event.event-goal {
   border-left-color: #4caf50;
-  background: #e8f5e9;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.08), rgba(76, 175, 80, 0.03));
+  border: 1px solid rgba(76, 175, 80, 0.2);
 }
 
 .event.event-yellow-card {
   border-left-color: #fbc02d;
-  background: #fffde7;
+  background: linear-gradient(135deg, rgba(251, 192, 45, 0.08), rgba(251, 192, 45, 0.03));
+  border: 1px solid rgba(251, 192, 45, 0.2);
 }
 
 .event.event-red-card {
   border-left-color: #f44336;
-  background: #ffebee;
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.08), rgba(244, 67, 54, 0.03));
+  border: 1px solid rgba(244, 67, 54, 0.2);
 }
 
 .event.event-substitution {
   border-left-color: #2196f3;
-  background: #e3f2fd;
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.08), rgba(33, 150, 243, 0.03));
+  border: 1px solid rgba(33, 150, 243, 0.2);
 }
 
 /* Event Icon */
 .event-icon {
   font-size: 24px;
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.08));
+  border-radius: 10px;
+  border: 1px solid rgba(102, 126, 234, 0.15);
 }
 
 /* Event Details */
@@ -99,64 +109,69 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   justify-content: center;
 }
 
 .event-header {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
   flex-wrap: wrap;
 }
 
 .event-minute {
-  background: #333;
+  background: linear-gradient(135deg, #1a1a2e, #0f0c29);
   color: white;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 12px;
-  font-weight: 600;
-  min-width: 35px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 40px;
   text-align: center;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 10px rgba(26, 26, 46, 0.2);
 }
 
 .event-type {
   text-transform: capitalize;
-  font-weight: 600;
-  font-size: 13px;
-  color: #666;
+  font-weight: 700;
+  font-size: 12px;
+  color: #555;
+  letter-spacing: 0.2px;
 }
 
 .event-team {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
-  color: #333;
+  color: #1a1a2e;
+  letter-spacing: -0.2px;
 }
 
 .event-info {
   display: flex;
   gap: 8px;
   font-size: 12px;
-  color: #666;
+  color: #777;
   flex-wrap: wrap;
 }
 
 .player {
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: #1a1a2e;
 }
 
 .description {
-  color: #999;
+  color: #aaa;
   font-style: italic;
+  font-size: 11px;
 }
 
 /* Events Overflow */
 .events-overflow {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #e0e0e0;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 2px solid rgba(102, 126, 234, 0.1);
   text-align: center;
   font-size: 12px;
   color: #999;
@@ -165,13 +180,13 @@
 
 /* Animation */
 .event {
-  animation: slideIn 0.3s ease;
+  animation: slideIn-event 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes slideIn {
+@keyframes slideIn-event {
   from {
     opacity: 0;
-    transform: translateX(-10px);
+    transform: translateX(-15px);
   }
   to {
     opacity: 1;
@@ -182,27 +197,27 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .event-log {
-    padding: 15px;
+    padding: 20px;
   }
 
   .events-list {
-    max-height: 300px;
+    max-height: 350px;
     gap: 10px;
   }
 
   .event {
-    gap: 10px;
-    padding: 10px;
+    gap: 12px;
+    padding: 12px;
   }
 
   .event-icon {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     font-size: 20px;
   }
 
   .event-minute {
-    min-width: 30px;
+    min-width: 36px;
     font-size: 11px;
   }
 
@@ -217,17 +232,23 @@
 }
 
 @media (max-width: 480px) {
+  .event-log {
+    padding: 15px;
+  }
+
   .events-list {
-    max-height: 250px;
+    max-height: 300px;
+    gap: 8px;
   }
 
   .event {
-    padding: 8px;
+    gap: 10px;
+    padding: 10px;
   }
 
   .event-icon {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     font-size: 18px;
   }
 

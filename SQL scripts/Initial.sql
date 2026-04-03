@@ -87,3 +87,54 @@ CREATE TABLE IF NOT EXISTS match_state_cache (
     last_cached TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (match_id) REFERENCES live_matches (match_id) ON DELETE CASCADE
 );
+
+-- 8. Create table for pre-match baselines (snapshot of initial predictions)
+CREATE TABLE IF NOT EXISTS prematch_baselines (
+    baseline_id INT AUTO_INCREMENT PRIMARY KEY,
+    match_id INT UNIQUE NOT NULL,
+    home_team VARCHAR(50) NOT NULL,
+    away_team VARCHAR(50) NOT NULL,
+    pre_home_xg FLOAT NOT NULL,
+    pre_away_xg FLOAT NOT NULL,
+    pre_home_elo FLOAT NOT NULL,
+    pre_away_elo FLOAT NOT NULL,
+    pre_home_win_prob FLOAT NOT NULL,
+    pre_draw_prob FLOAT NOT NULL,
+    pre_away_win_prob FLOAT NOT NULL,
+    home_form_rating FLOAT DEFAULT 1500.0,
+    away_form_rating FLOAT DEFAULT 1500.0,
+    league_position_home INT,
+    league_position_away INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (match_id) REFERENCES live_matches (match_id) ON DELETE CASCADE,
+    INDEX idx_match_id (match_id)
+);
+
+-- 9. Create table for advanced match statistics (shots, possession, etc.)
+CREATE TABLE IF NOT EXISTS match_statistics (
+    stat_id INT AUTO_INCREMENT PRIMARY KEY,
+    match_id INT NOT NULL,
+    minute INT NOT NULL,
+    home_shots INT DEFAULT 0,
+    away_shots INT DEFAULT 0,
+    home_shots_on_target INT DEFAULT 0,
+    away_shots_on_target INT DEFAULT 0,
+    home_possession FLOAT DEFAULT 50.0,
+    away_possession FLOAT DEFAULT 50.0,
+    home_pass_accuracy FLOAT DEFAULT 0.0,
+    away_pass_accuracy FLOAT DEFAULT 0.0,
+    home_tackles INT DEFAULT 0,
+    away_tackles INT DEFAULT 0,
+    home_fouls INT DEFAULT 0,
+    away_fouls INT DEFAULT 0,
+    home_corners INT DEFAULT 0,
+    away_corners INT DEFAULT 0,
+    home_yellow_cards INT DEFAULT 0,
+    away_yellow_cards INT DEFAULT 0,
+    home_red_cards INT DEFAULT 0,
+    away_red_cards INT DEFAULT 0,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (match_id) REFERENCES live_matches (match_id) ON DELETE CASCADE,
+    INDEX idx_match_id (match_id),
+    INDEX idx_minute (minute)
+);

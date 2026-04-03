@@ -5,7 +5,7 @@ Handles initialization, updates, and persistence of match state
 import logging
 from datetime import datetime
 from typing import Optional, Tuple
-from models import LiveMatchState, MatchEvent, EventType, PredictionSnapshot, MatchStatus
+from models import LiveMatchState, MatchEvent, EventType, PredictionSnapshot, MatchStatus, PrematchBaseline
 from cache import get_redis_cache
 from predictive_engine import predict_match
 from app.db import SessionLocal
@@ -83,6 +83,23 @@ class StateService:
             self.cache.save_base_xg(match_id, prediction["home_xg"], prediction["away_xg"])
             self.cache.add_active_match(match_id, home_team, away_team)
             
+            # Save prematch baseline for comparison later
+            prematch_baseline = PrematchBaseline(
+                match_id=match_id,
+                home_team=home_team,
+                away_team=away_team,
+                pre_home_xg=prediction["home_xg"],
+                pre_away_xg=prediction["away_xg"],
+                pre_home_elo=prediction["home_elo"],
+                pre_away_elo=prediction["away_elo"],
+                pre_home_win_prob=prediction["home_win_prob"],
+                pre_draw_prob=prediction["draw_prob"],
+                pre_away_win_prob=prediction["away_win_prob"],
+                home_form_rating=prediction.get("home_form_rating", 1500.0),
+                away_form_rating=prediction.get("away_form_rating", 1500.0),
+            )
+            self.cache.save_prematch_baseline(match_id, prematch_baseline.to_dict())
+            
             # Create initial prediction snapshot
             snapshot = PredictionSnapshot(
                 match_id=match_id,
@@ -104,6 +121,27 @@ class StateService:
             
         except Exception as e:
             logger.error(f"Error initializing match: {e}")
+            return None
+    
+    # ============ PREMATCH BASELINE OPERATIONS ============
+    
+    def get_prematch_baseline(self, match_id: int) -> Optional[dict]:
+        """
+        Retrieve prematch baseline metrics for comparison
+        
+        Args:
+            match_id: Match ID
+        
+        Returns:
+            Dict with prematch baseline or None
+        """
+        try:
+            baseline = self.cache.get_prematch_baseline(match_id)
+            if baseline is None:
+                logger.warning(f"No prematch baseline found for match {match_id}")
+            return baseline
+        except Exception as e:
+            logger.error(f"Error getting prematch baseline: {e}")
             return None
     
     # ============ MATCH STATE UPDATES ============

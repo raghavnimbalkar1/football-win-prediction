@@ -16,6 +16,9 @@ import './App.css';
 function App() {
   // Match ID to display (in real app, this would come from URL params or state)
   const matchId = 1;
+  
+  // Get API base URL from environment or default
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
 
   return (
     <div className="app">
@@ -30,7 +33,7 @@ function App() {
         {/* Match Container handles all live updates and WebSocket connection */}
         <MatchContainer 
           matchId={matchId}
-          apiBaseUrl="http://localhost:8000"
+          apiBaseUrl={apiBaseUrl}
         />
       </main>
 

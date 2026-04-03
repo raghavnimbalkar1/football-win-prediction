@@ -90,6 +90,102 @@ class PredictionSnapshot:
         }
 
 
+# ============ PREMATCH BASELINE MODEL ============
+
+@dataclass
+class PrematchBaseline:
+    """Stores pre-match baseline metrics for comparison with live data"""
+    match_id: int
+    home_team: str
+    away_team: str
+    pre_home_xg: float
+    pre_away_xg: float
+    pre_home_elo: float
+    pre_away_elo: float
+    pre_home_win_prob: float
+    pre_draw_prob: float
+    pre_away_win_prob: float
+    home_form_rating: float = 1500.0
+    away_form_rating: float = 1500.0
+    league_position_home: Optional[int] = None
+    league_position_away: Optional[int] = None
+    created_at: datetime = field(default_factory=datetime.now)
+    
+    def to_dict(self):
+        """Convert to dictionary for storage"""
+        return {
+            "match_id": self.match_id,
+            "home_team": self.home_team,
+            "away_team": self.away_team,
+            "pre_home_xg": round(self.pre_home_xg, 2),
+            "pre_away_xg": round(self.pre_away_xg, 2),
+            "pre_home_elo": round(self.pre_home_elo, 1),
+            "pre_away_elo": round(self.pre_away_elo, 1),
+            "pre_home_win_prob": round(self.pre_home_win_prob, 4),
+            "pre_draw_prob": round(self.pre_draw_prob, 4),
+            "pre_away_win_prob": round(self.pre_away_win_prob, 4),
+            "home_form_rating": round(self.home_form_rating, 1),
+            "away_form_rating": round(self.away_form_rating, 1),
+            "league_position_home": self.league_position_home,
+            "league_position_away": self.league_position_away,
+            "created_at": self.created_at.isoformat()
+        }
+
+
+# ============ MATCH STATISTICS MODEL ============
+
+@dataclass
+class MatchStatistics:
+    """Stores advanced match statistics (shots, possession, tackles, etc.)"""
+    match_id: int
+    minute: int
+    home_shots: int = 0
+    away_shots: int = 0
+    home_shots_on_target: int = 0
+    away_shots_on_target: int = 0
+    home_possession: float = 50.0
+    away_possession: float = 50.0
+    home_pass_accuracy: float = 0.0
+    away_pass_accuracy: float = 0.0
+    home_tackles: int = 0
+    away_tackles: int = 0
+    home_fouls: int = 0
+    away_fouls: int = 0
+    home_corners: int = 0
+    away_corners: int = 0
+    home_yellow_cards: int = 0
+    away_yellow_cards: int = 0
+    home_red_cards: int = 0
+    away_red_cards: int = 0
+    updated_at: datetime = field(default_factory=datetime.now)
+    
+    def to_dict(self):
+        """Convert to dictionary for storage"""
+        return {
+            "match_id": self.match_id,
+            "minute": self.minute,
+            "home_shots": self.home_shots,
+            "away_shots": self.away_shots,
+            "home_shots_on_target": self.home_shots_on_target,
+            "away_shots_on_target": self.away_shots_on_target,
+            "home_possession": round(self.home_possession, 1),
+            "away_possession": round(self.away_possession, 1),
+            "home_pass_accuracy": round(self.home_pass_accuracy, 1),
+            "away_pass_accuracy": round(self.away_pass_accuracy, 1),
+            "home_tackles": self.home_tackles,
+            "away_tackles": self.away_tackles,
+            "home_fouls": self.home_fouls,
+            "away_fouls": self.away_fouls,
+            "home_corners": self.home_corners,
+            "away_corners": self.away_corners,
+            "home_yellow_cards": self.home_yellow_cards,
+            "away_yellow_cards": self.away_yellow_cards,
+            "home_red_cards": self.home_red_cards,
+            "away_red_cards": self.away_red_cards,
+            "updated_at": self.updated_at.isoformat()
+        }
+
+
 # ============ LIVE MATCH STATE MODEL ============
 
 @dataclass
@@ -136,6 +232,26 @@ class LiveMatchState:
     home_momentum: float = 0.5
     away_momentum: float = 0.5
     
+    # Advanced Statistics
+    home_shots: int = 0
+    away_shots: int = 0
+    home_shots_on_target: int = 0
+    away_shots_on_target: int = 0
+    home_possession: float = 50.0
+    away_possession: float = 50.0
+    home_pass_accuracy: float = 0.0
+    away_pass_accuracy: float = 0.0
+    home_tackles: int = 0
+    away_tackles: int = 0
+    home_fouls: int = 0
+    away_fouls: int = 0
+    home_corners: int = 0
+    away_corners: int = 0
+    home_yellow_cards: int = 0
+    away_yellow_cards: int = 0
+    home_red_cards: int = 0
+    away_red_cards: int = 0
+    
     # Events during match
     events: List[MatchEvent] = field(default_factory=list)
     
@@ -168,6 +284,26 @@ class LiveMatchState:
             "away_win_prob": round(self.away_win_prob, 4),
             "home_momentum": round(self.home_momentum, 2),
             "away_momentum": round(self.away_momentum, 2),
+            # Advanced statistics
+            "home_shots": self.home_shots,
+            "away_shots": self.away_shots,
+            "home_shots_on_target": self.home_shots_on_target,
+            "away_shots_on_target": self.away_shots_on_target,
+            "home_possession": round(self.home_possession, 1),
+            "away_possession": round(self.away_possession, 1),
+            "home_pass_accuracy": round(self.home_pass_accuracy, 1),
+            "away_pass_accuracy": round(self.away_pass_accuracy, 1),
+            "home_tackles": self.home_tackles,
+            "away_tackles": self.away_tackles,
+            "home_fouls": self.home_fouls,
+            "away_fouls": self.away_fouls,
+            "home_corners": self.home_corners,
+            "away_corners": self.away_corners,
+            "home_yellow_cards": self.home_yellow_cards,
+            "away_yellow_cards": self.away_yellow_cards,
+            "home_red_cards": self.home_red_cards,
+            "away_red_cards": self.away_red_cards,
+            # Events & timestamps
             "events": [event.to_dict() for event in self.events],
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
@@ -199,6 +335,25 @@ class LiveMatchState:
             away_win_prob=data.get("away_win_prob", 0.34),
             home_momentum=data.get("home_momentum", 0.5),
             away_momentum=data.get("away_momentum", 0.5),
+            # Advanced statistics
+            home_shots=data.get("home_shots", 0),
+            away_shots=data.get("away_shots", 0),
+            home_shots_on_target=data.get("home_shots_on_target", 0),
+            away_shots_on_target=data.get("away_shots_on_target", 0),
+            home_possession=data.get("home_possession", 50.0),
+            away_possession=data.get("away_possession", 50.0),
+            home_pass_accuracy=data.get("home_pass_accuracy", 0.0),
+            away_pass_accuracy=data.get("away_pass_accuracy", 0.0),
+            home_tackles=data.get("home_tackles", 0),
+            away_tackles=data.get("away_tackles", 0),
+            home_fouls=data.get("home_fouls", 0),
+            away_fouls=data.get("away_fouls", 0),
+            home_corners=data.get("home_corners", 0),
+            away_corners=data.get("away_corners", 0),
+            home_yellow_cards=data.get("home_yellow_cards", 0),
+            away_yellow_cards=data.get("away_yellow_cards", 0),
+            home_red_cards=data.get("home_red_cards", 0),
+            away_red_cards=data.get("away_red_cards", 0),
             events=[],  # Events loaded separately if needed
             created_at=datetime.fromisoformat(data.get("created_at", datetime.now().isoformat())),
             updated_at=datetime.fromisoformat(data.get("updated_at", datetime.now().isoformat())),
@@ -218,4 +373,8 @@ class LiveMatchState:
             "away_win_prob": round(self.away_win_prob, 4),
             "home_xg": round(self.current_home_xg, 2),
             "away_xg": round(self.current_away_xg, 2),
+            "home_possession": round(self.home_possession, 1),
+            "away_possession": round(self.away_possession, 1),
+            "home_shots": self.home_shots,
+            "away_shots": self.away_shots,
         }

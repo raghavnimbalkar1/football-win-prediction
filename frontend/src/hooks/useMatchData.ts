@@ -2,13 +2,45 @@ import { useState, useCallback, useEffect } from 'react';
 
 export interface MatchState {
   match_id: number;
-  state: string;
+  external_match_id?: string;
+  state?: string;
+  status: 'scheduled' | 'in_progress' | 'finished' | 'postponed' | 'abandoned';
   home_team: string;
   away_team: string;
   home_goals: number;
   away_goals: number;
   current_minute: number;
   current_second: number;
+  base_home_xg: number;
+  base_away_xg: number;
+  current_home_xg: number;
+  current_away_xg: number;
+  home_elo: number;
+  away_elo: number;
+  home_win_prob: number;
+  draw_prob: number;
+  away_win_prob: number;
+  home_momentum: number;
+  away_momentum: number;
+  // Advanced statistics
+  home_shots?: number;
+  away_shots?: number;
+  home_shots_on_target?: number;
+  away_shots_on_target?: number;
+  home_possession?: number;
+  away_possession?: number;
+  home_pass_accuracy?: number;
+  away_pass_accuracy?: number;
+  home_tackles?: number;
+  away_tackles?: number;
+  home_fouls?: number;
+  away_fouls?: number;
+  home_corners?: number;
+  away_corners?: number;
+  home_yellow_cards?: number;
+  away_yellow_cards?: number;
+  home_red_cards?: number;
+  away_red_cards?: number;
 }
 
 export interface MatchSummary extends MatchState {

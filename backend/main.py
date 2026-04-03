@@ -304,6 +304,30 @@ async def get_match_state(match_id: int):
         logger.error(f"Error getting match state: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/match/{match_id}/prematch-baseline")
+async def get_prematch_baseline(match_id: int):
+    """
+    Get pre-match baseline metrics for comparison with live data
+    
+    Args:
+        match_id: Match ID
+    
+    Returns:
+        Pre-match baseline data
+    """
+    try:
+        service = get_state_service()
+        baseline = service.get_prematch_baseline(match_id)
+        
+        if baseline is None:
+            raise HTTPException(status_code=404, detail=f"Baseline not found for match {match_id}")
+        
+        return baseline
+        
+    except Exception as e:
+        logger.error(f"Error getting prematch baseline: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/match/{match_id}/score")
 async def update_match_score(match_id: int, request: UpdateScoreRequest):
     """
@@ -500,6 +524,30 @@ async def finish_match(match_id: int):
         
     except Exception as e:
         logger.error(f"Error finishing match: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/match/{match_id}/prematch-baseline")
+async def get_prematch_baseline(match_id: int):
+    """
+    Get prematch baseline metrics for comparison with live data
+    
+    Args:
+        match_id: Match ID
+    
+    Returns:
+        PrematchBaseline with initial predictions and team ratings
+    """
+    try:
+        service = get_state_service()
+        baseline = service.get_prematch_baseline(match_id)
+        
+        if baseline is None:
+            raise HTTPException(status_code=404, detail=f"No prematch baseline found for match {match_id}")
+        
+        return baseline
+        
+    except Exception as e:
+        logger.error(f"Error getting prematch baseline: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/match/{match_id}/summary")

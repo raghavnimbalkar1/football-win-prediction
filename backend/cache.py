@@ -211,6 +211,40 @@ class RedisCache:
             logger.error(f"Error retrieving base xG: {e}")
             return None
     
+    # ============ PREMATCH BASELINE OPERATIONS ============
+    
+    def save_prematch_baseline(self, match_id: int, baseline_data: Dict, ttl: int = 86400) -> bool:
+        """
+        Save pre-match baseline metrics
+        
+        Args:
+            match_id: Match ID
+            baseline_data: Dict with pre-match metrics
+            ttl: Time to live in seconds
+        
+        Returns:
+            True if successful
+        """
+        try:
+            key = f"match:{match_id}:prematch_baseline"
+            value = json.dumps(baseline_data)
+            self.client.setex(key, ttl, value)
+            logger.debug(f"Saved prematch baseline for match {match_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Error saving prematch baseline: {e}")
+            return False
+    
+    def get_prematch_baseline(self, match_id: int) -> Optional[Dict]:
+        """Retrieve pre-match baseline for a match"""
+        try:
+            key = f"match:{match_id}:prematch_baseline"
+            data = self.client.get(key)
+            return json.loads(data) if data else None
+        except Exception as e:
+            logger.error(f"Error retrieving prematch baseline: {e}")
+            return None
+    
     # ============ ACTIVE MATCHES TRACKING ============
     
     def add_active_match(self, match_id: int, home_team: str, away_team: str) -> bool:

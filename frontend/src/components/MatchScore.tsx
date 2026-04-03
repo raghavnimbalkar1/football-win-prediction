@@ -9,7 +9,8 @@ interface MatchScoreProps {
     away_goals: number;
     current_minute: number;
     current_second: number;
-    state: string;
+    state?: string;
+    status?: 'scheduled' | 'in_progress' | 'finished' | 'postponed' | 'abandoned';
   };
 }
 
@@ -20,15 +21,19 @@ const MatchScore: React.FC<MatchScoreProps> = ({ match }) => {
   const getStatusColor = (state: string) => {
     switch (state) {
       case 'live':
+      case 'in_progress':
         return 'live';
       case 'finished':
         return 'finished';
       case 'not_started':
+      case 'scheduled':
         return 'not-started';
       default:
         return 'unknown';
     }
   };
+  
+  const matchStatus = match.status || match.state || 'scheduled';
 
   const formatTime = () => {
     const totalSeconds = match.current_minute * 60 + match.current_second;
@@ -37,15 +42,15 @@ const MatchScore: React.FC<MatchScoreProps> = ({ match }) => {
 
   return (
     <div className="match-score">
-      <div className={`status-badge ${getStatusColor(match.state)}`}>
-        {match.state === 'live' && (
+      <div className={`status-badge ${getStatusColor(matchStatus)}`}>
+        {(matchStatus === 'live' || matchStatus === 'in_progress') && (
           <>
             <span className="live-indicator"></span>
             LIVE
           </>
         )}
-        {match.state === 'finished' && 'FINISHED'}
-        {match.state === 'not_started' && 'NOT STARTED'}
+        {matchStatus === 'finished' && 'FINISHED'}
+        {(matchStatus === 'not_started' || matchStatus === 'scheduled') && 'NOT STARTED'}
       </div>
 
       <div className="score-display">

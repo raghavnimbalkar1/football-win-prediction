@@ -1,12 +1,10 @@
-/* Match Container CSS */
+/* Match Container CSS - Modern Design */
 
 .match-container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -16,62 +14,73 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
+  min-height: 500px;
 }
 
 .match-container.error {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
+  min-height: 500px;
 }
 
 .spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
+  border: 5px solid rgba(102, 126, 234, 0.1);
+  border-top: 5px solid #667eea;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   animation: spin 1s linear infinite;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .error-box {
-  background: #fee;
-  border: 2px solid #f00;
-  border-radius: 8px;
-  padding: 20px;
+  background: linear-gradient(135deg, #fff5f5, #ffe9e9);
+  border: 2px solid #ff6b6b;
+  border-radius: 12px;
+  padding: 30px;
   text-align: center;
   max-width: 500px;
+  box-shadow: 0 10px 25px rgba(255, 107, 107, 0.15);
 }
 
 .error-box h3 {
-  color: #c00;
+  color: #d32f2f;
   margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.error-box p {
+  color: #c62828;
+  font-size: 14px;
+  margin: 10px 0;
+  line-height: 1.6;
 }
 
 .error-box button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background: #c00;
+  margin-top: 20px;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
 }
 
 .error-box button:hover {
-  background: #a00;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
 }
 
 /* Header */
@@ -79,55 +88,75 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 35px;
+  padding: 25px 30px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+  border-radius: 12px;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.1);
 }
 
 .match-header h1 {
   margin: 0;
-  font-size: 32px;
-  color: #333;
+  font-size: 28px;
+  color: #1a1a2e;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .connection-status {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: #f5f5f5;
-  border-radius: 20px;
-  font-size: 14px;
-  color: #666;
+  gap: 10px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 24px;
+  font-size: 13px;
+  color: #555;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.1);
 }
 
 .status-indicator {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #999;
-  transition: background 0.3s ease;
+  background: #bbb;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 3px rgba(187, 187, 187, 0.1);
 }
 
 .status-indicator.connected {
   background: #4caf50;
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+  box-shadow: 0 0 12px rgba(76, 175, 80, 0.8), 0 0 0 3px rgba(76, 175, 80, 0.2);
+  animation: pulse 2s infinite;
 }
 
 .status-indicator.disconnected {
   background: #f44336;
+  box-shadow: 0 0 8px rgba(244, 67, 54, 0.5);
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
 /* Content Layout */
 .match-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 30px;
-  margin-bottom: 30px;
+  gap: 35px;
+  margin-bottom: 35px;
 }
 
 .score-section {
   grid-column: 1;
+}
+
+.metrics-section {
+  grid-column: 1 / -1;
 }
 
 .probability-section {
@@ -141,49 +170,62 @@
 .probability-section h2,
 .events-section h2 {
   margin-top: 0;
-  font-size: 20px;
-  color: #333;
-  margin-bottom: 15px;
+  font-size: 18px;
+  color: #1a1a2e;
+  margin-bottom: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
 }
 
 /* Footer */
 .match-footer {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  padding-top: 20px;
-  border-top: 2px solid #e0e0e0;
+  gap: 15px;
+  padding-top: 30px;
+  border-top: 2px solid rgba(0, 0, 0, 0.06);
 }
 
 .btn-refresh {
-  padding: 10px 20px;
-  background: #3498db;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
-  transition: background 0.3s ease;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+  letter-spacing: 0.3px;
 }
 
 .btn-refresh:hover:not(:disabled) {
-  background: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
 .btn-refresh:disabled {
-  background: #bdc3c7;
+  background: linear-gradient(135deg, #ccc, #bbb);
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .match-container {
-    padding: 10px;
+  .match-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px 20px;
+  }
+
+  .match-header h1 {
+    font-size: 24px;
   }
 
   .match-content {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 25px;
   }
 
   .score-section {
@@ -197,14 +239,28 @@
   .events-section {
     grid-column: 1;
   }
+}
 
+@media (max-width: 480px) {
   .match-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    padding: 15px;
   }
 
   .match-header h1 {
-    font-size: 24px;
+    font-size: 20px;
+  }
+
+  .connection-status {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .match-content {
+    gap: 20px;
+  }
+
+  .btn-refresh {
+    padding: 10px 20px;
+    font-size: 13px;
   }
 }
