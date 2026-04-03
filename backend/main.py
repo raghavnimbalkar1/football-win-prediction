@@ -333,20 +333,19 @@ async def update_match_score(match_id: int, request: UpdateScoreRequest):
         
         # Run Monte Carlo simulation and update predictions
         sim_service = get_live_simulation_service()
-        updated_state = sim_service.simulate_and_update(match_id)
+        sim_result = sim_service.simulate_and_update(match_id)
         
         # Broadcast updated predictions to all connected clients
-        if updated_state:
+        if sim_result:
             await manager.broadcast(match_id, {
                 "type": "score_update",
                 "match_id": match_id,
-                "home_goals": updated_state.home_goals,
-                "away_goals": updated_state.away_goals,
-                "minute": updated_state.current_minute,
-                "second": updated_state.current_second,
-                "predictions": updated_state.last_predictions.to_dict() if updated_state.last_predictions else {}
+                "home_goals": request.home_goals,
+                "away_goals": request.away_goals,
+                "minute": request.minute,
+                "second": request.second,
+                "predictions": sim_result.get("predictions", {})
             })
-            return updated_state.to_dict()
         
         return state.to_dict()
         
@@ -390,9 +389,11 @@ async def add_match_event(match_id: int, request: AddEventRequest):
         # Trigger simulation and broadcast for goals (events that change score)
         if request.event_type in ["goal", "own_goal"]:
             sim_service = get_live_simulation_service()
-            updated_state = sim_service.simulate_and_update(match_id)
+            sim_result = sim_service.simulate_and_update(match_id)
             
-            if updated_state:
+            if sim_result:
+                # Get current state for score information
+                current_state = service.get_current_state(match_id)
                 await manager.broadcast(match_id, {
                     "type": "event",
                     "match_id": match_id,
@@ -403,11 +404,11 @@ async def add_match_event(match_id: int, request: AddEventRequest):
                         "minute": request.minute,
                         "description": request.description
                     },
-                    "home_goals": updated_state.home_goals,
-                    "away_goals": updated_state.away_goals,
-                    "predictions": updated_state.last_predictions.to_dict() if updated_state.last_predictions else {}
+                    "home_goals": current_state.home_goals if current_state else 0,
+                    "away_goals": current_state.away_goals if current_state else 0,
+                    "predictions": sim_result.get("predictions", {})
                 })
-                return updated_state.to_dict()
+                return state.to_dict()
         else:
             # Broadcast other events without triggering simulation
             await manager.broadcast(match_id, {
@@ -467,7 +468,7 @@ async def update_match_predictions(match_id: int):
         await manager.broadcast(match_id, {
             "type": "predictions_update",
             "match_id": match_id,
-            "predictions": updated_state.last_predictions.to_dict() if updated_state.last_predictions else {}
+            "predictions": predictions
         })
         
         return updated_state.to_dict()
