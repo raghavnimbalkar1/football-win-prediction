@@ -4,6 +4,7 @@ import ProbabilityChart from './ProbabilityChart';
 import MatchScore from './MatchScore';
 import EventLog from './EventLog';
 import MetricsComparison from './MetricsComparison';
+import SimulatorControls from './SimulatorControls';
 import './MatchContainer.css';
 
 interface MatchContainerProps {
@@ -188,6 +189,21 @@ const MatchContainer: React.FC<MatchContainerProps> = ({
         <div className="events-section">
           <h2>Match Events</h2>
           <EventLog events={events} />
+        </div>
+
+        {/* Simulator Controls */}
+        <div className="simulator-section">
+          <SimulatorControls
+            matchId={matchId}
+            onSimulationStart={() => {
+              console.log('Simulation started');
+              refetch();
+            }}
+            onSimulationStop={() => {
+              console.log('Simulation stopped');
+              refetch();
+            }}
+          />
         </div>
       </div>
 

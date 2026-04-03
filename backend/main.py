@@ -19,6 +19,12 @@ from services.simulation_service import get_live_simulation_service
 from models import LiveMatchState, MatchEvent, EventType
 from schemas import InitializeMatchRequest, UpdateScoreRequest, AddEventRequest, UpdatePredictionRequest
 
+# Import Kafka and simulation components
+from kafka_producer import get_producer
+from kafka_consumer import get_consumer
+from match_event_simulator import MatchEventSimulator
+from simulation_manager import MatchSimulationManager, SimulationConfig
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -85,6 +91,15 @@ class ConnectionManager:
 
 
 manager = ConnectionManager()
+
+# ============ KAFKA AND SIMULATION INITIALIZATION ============
+# Initialize Kafka producer and consumer
+producer = get_producer()  # Falls back to mock if Kafka unavailable
+consumer = get_consumer()  # Falls back to mock if Kafka unavailable
+
+# Initialize simulator and manager
+simulator = MatchEventSimulator()
+simulation_manager = MatchSimulationManager(producer, simulator)
 
 # ============ HEALTH CHECK ============
 @app.get("/health")
@@ -593,6 +608,173 @@ async def get_prediction_history(match_id: int):
         
     except Exception as e:
         logger.error(f"Error getting prediction history: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ============ SIMULATION ENDPOINTS ============
+
+@app.post("/api/simulation/start")
+async def start_simulation(
+    match_id: int = Query(..., description="Match ID"),
+    speed_multiplier: float = Query(1.0, description="Speed multiplier (0.25-10.0)")
+):
+    """
+    Start a match simulation
+    
+    Args:
+        match_id: Match ID to simulate
+        speed_multiplier: How fast to run simulation (1.0 = real-time)
+    
+    Returns:
+        Simulation status
+    """
+    try:
+        # Get match info
+        service = get_state_service()
+        state = service.get_live_match_state(match_id)
+        
+        if not state:
+            raise HTTPException(status_code=404, detail=f"Match {match_id} not found")
+        
+        # Create simulation config
+        config = SimulationConfig(
+            match_id=match_id,
+            home_team=state.home_team,
+            away_team=state.away_team,
+            speed_multiplier=speed_multiplier,
+            duration_minutes=90
+        )
+        
+        # Start simulation
+        if not simulation_manager.start_simulation(config):
+            raise HTTPException(status_code=400, detail="Failed to start simulation")
+        
+        return {"status": "started", "match_id": match_id, "speed_multiplier": speed_multiplier}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error starting simulation: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/simulation/stop")
+async def stop_simulation(match_id: int = Query(..., description="Match ID")):
+    """
+    Stop a running simulation
+    
+    Args:
+        match_id: Match ID
+    
+    Returns:
+        Confirmation
+    """
+    try:
+        if not simulation_manager.stop_simulation(match_id):
+            raise HTTPException(status_code=404, detail=f"No simulation found for match {match_id}")
+        
+        return {"status": "stopped", "match_id": match_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error stopping simulation: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/simulation/pause")
+async def pause_simulation(match_id: int = Query(..., description="Match ID")):
+    """Pause a running simulation"""
+    try:
+        if not simulation_manager.pause_simulation(match_id):
+            raise HTTPException(status_code=400, detail=f"Cannot pause simulation for match {match_id}")
+        
+        return {"status": "paused", "match_id": match_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error pausing simulation: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/simulation/resume")
+async def resume_simulation(match_id: int = Query(..., description="Match ID")):
+    """Resume a paused simulation"""
+    try:
+        if not simulation_manager.resume_simulation(match_id):
+            raise HTTPException(status_code=400, detail=f"Cannot resume simulation for match {match_id}")
+        
+        return {"status": "resumed", "match_id": match_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error resuming simulation: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/simulation/speed")
+async def set_simulation_speed(
+    match_id: int = Query(..., description="Match ID"),
+    multiplier: float = Query(..., description="Speed multiplier (0.25-10.0)")
+):
+    """
+    Adjust simulation speed
+    
+    Args:
+        match_id: Match ID
+        multiplier: Speed multiplier
+    
+    Returns:
+        New speed setting
+    """
+    try:
+        if not simulation_manager.set_speed(match_id, multiplier):
+            raise HTTPException(status_code=404, detail=f"No simulation found for match {match_id}")
+        
+        return {"match_id": match_id, "speed_multiplier": multiplier}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error setting speed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/simulation/status/{match_id}")
+async def get_simulation_status(match_id: int):
+    """
+    Get current simulation status
+    
+    Args:
+        match_id: Match ID
+    
+    Returns:
+        Simulation status details
+    """
+    try:
+        status = simulation_manager.get_status(match_id)
+        
+        if not status:
+            raise HTTPException(status_code=404, detail=f"No simulation found for match {match_id}")
+        
+        return status
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting simulation status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/simulation/list")
+async def list_simulations():
+    """
+    Get all active simulations
+    
+    Returns:
+        List of active simulations with their status
+    """
+    try:
+        simulations = simulation_manager.list_simulations()
+        return {"simulations": simulations, "total": len(simulations)}
+        
+    except Exception as e:
+        logger.error(f"Error listing simulations: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # ============ ERROR HANDLERS ============
